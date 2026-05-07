@@ -42,7 +42,21 @@ services:
     networks: 
       - stock_data
 
-
+  consumer:
+    build:
+      context: ./consumer # use same Apache spark image for pyspark streaming
+      dockerfile: Dockerfile
+    image: stream_consumer
+    container_name: consumer #Assign a name for the streaming job container
+    depends_on:
+      - kafka
+      - spark-master  #wait for sark master and kafka to be online before starting job
+    restart: unless-stopped
+    volumes:
+      - ivy_cache:/opt/spark/work-dir/.ivy2
+      - ./consumer:/opt/spark/work-dir/apps
+    networks: 
+      - stock_data
 #------------------KAFKA SERVICE-----------------------------------------
   kafka:
     image: confluentinc/cp-kafka:7.4.10
