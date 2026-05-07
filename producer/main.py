@@ -1,8 +1,13 @@
+import time
+
 from extract import connect_to_api,extract_json
+from producer_setup import init_producer, topic
 
 def main():
     response = connect_to_api()
     data = extract_json(response)
+
+    producer = init_producer()
 
     for stock in data:
         print(stock)
@@ -14,7 +19,16 @@ def main():
             'high': stock['high'],
             'close': stock['close']
         }
-        print(result)
+
+        producer.send(topic, result)
+
+        print(f'Data sent to {topic} topic:')
+
+        time.sleep(2)
+
+    producer.flush()
+    producer.close()
+        
     return None
 
 if __name__ == "__main__":
