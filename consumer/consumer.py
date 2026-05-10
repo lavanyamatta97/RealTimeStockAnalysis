@@ -10,6 +10,13 @@ checkpoint_dir = "/tmp/checkpoint/kafka_to_postgres"
 if not os.path.exists(checkpoint_dir):
     os.makedirs(checkpoint_dir)
 
+postgres_config = {
+    "url": "jdbc:postgresql://postgres:5432/stock_data",
+    "user": "admin",
+    "password": "admin",
+    "dbtable": "stocks",
+    "driver": "org.postgresql.Driver"
+}
 
 
 #the schema/structure matching the new data coming from kafka. this is needed to parse the json data correctly
@@ -55,14 +62,32 @@ processed_df = parsed_df.select(
 
 
 #Display the result to the terminal console output mode
+#query = (processed_df.writeStream \
+  #       .outputMode("append") \
+   #        .format("console") \
+   #         .option("truncate", "false") \
+   #        .option("checkpointLocation", checkpoint_dir) \
+    #       .start())
 
-query = (processed_df.writeStream \
-         .outputMode("append") \
-            .format("console") \
-            .option("truncate", "false") \
-            .option("checkpointLocation", checkpoint_dir) \
-            .start())
+def write_to_postgres(batch_df, batch_id):
+    # writes a microbatch Dataframe to postgresql using JDBC in append mode
 
+    batch_df.write \
+        .format("jdbc") \
+        .mode("append") \
+        .options(**postgres_config) \
+        .save()
+    
+
+#Write the result to a Postgres database using foreachBatch
+#stream to postgres using foreachBatch
+query = (
+    processed_df.writeStream 
+            .foreachBatch(write_to_postgres) # Use foreachBatch for JDBC sinks
+            .option('checkpointLocation', checkpoint_dir) # direcctory where spark will store its checkpoint data. crucial in streaming to enable fault tolerance
+            .outputMode('append') # we want to append new data to the database, not overwrite
+            .start()
+         )
 
 #wait for the termination of the query
 query.awaitTermination()

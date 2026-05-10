@@ -64,7 +64,7 @@ services:
     hostname: kafka
     ports:
       - "9092:9092" #internal listener for Docker containers
-      - "9094:9094" #external listener for local host(python client)
+      - "9094:9094" #external listener for local host(python clent)
     environment:
       KAFKA_KRAFT_MODE: "true"
       KAFKA_PROCESS_ROLES: controller,broker
@@ -115,9 +115,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: stock_data
     ports: 
-     - "5432:5432"
+     - "5434:5432"
     volumes: 
-     - postgres_data:/var/lib/postgresql/data
+     - postgres_data:/var/lib/postgres/data
     networks: 
      - stock_data
   
