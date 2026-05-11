@@ -134,14 +134,35 @@ services:
       - postgres 
     networks: 
       - stock_data
-  
+
+#------------------GRAFANA SERVICE-----------------------------------------
+  grafana:
+    image: grafana/grafana:11.0.0      # pin the version, never use :latest in a real project
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin   # move to .env like your postgres creds
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana            # persists dashboards, datasources, settings
+      - ./grafana/provisioning:/etc/grafana/provisioning  # declarative config (explained below)
+    depends_on:
+      - postgres
+    networks:
+      - stock_data
+
 #------------------VOLUMES AND NETWORKS-----------------------------------------
 volumes:
   spark-data:
   kafka_data:
   postgres_data:
   ivy_cache:
+  grafana_data:
 
+  
 networks:
   stock_data:
 
