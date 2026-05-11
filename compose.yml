@@ -144,7 +144,7 @@ services:
       - "3000:3000"
     environment:
       GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin   # move to .env like your postgres creds
+      GF_SECURITY_ADMIN_PASSWORD: admin45   # move to .env like your postgres creds
       GF_USERS_ALLOW_SIGN_UP: "false"
     volumes:
       - grafana_data:/var/lib/grafana            # persists dashboards, datasources, settings
@@ -162,9 +162,6 @@ volumes:
   ivy_cache:
   grafana_data:
 
-  
+
 networks:
   stock_data:
-
-
-

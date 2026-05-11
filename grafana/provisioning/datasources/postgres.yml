@@ -5,13 +5,12 @@ datasources:
     type: postgres
     url: postgres_db:5432
     database: stock_data
-    user: postgres
+    user: admin
     secureJsonData:
-      password: postgres
+      password: admin
     jsonData:
       sslmode: disable
       postgresVersion: 1700
       timescaledb: false
     isDefault: true
     editable: false
-    
